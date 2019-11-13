@@ -47,8 +47,14 @@ webcasting/
 en-us/articles/
 en-us/assets/
 en-us/images/
-en-us/vendors
-en-us/zc
+en-us/vendors/
+en-us/zc/
+mobile/css_e/
+mobile/images/
+mobile/js_e/
+mobile/en-us/articles/
+mobile/en-us/images/
+
 
 # TypeScript v1 declaration files
 typings/
