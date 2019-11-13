@@ -1,0 +1,286 @@
+   // Your web app's Firebase configuration
+
+   var firebaseConfig = {
+       apiKey: "AIzaSyCCocgP9PSQieqVuSIDIhNwb1vQai-N534",
+       authDomain: "tencent-1de4b.firebaseapp.com",
+       databaseURL: "https://tencent-1de4b.firebaseio.com",
+       projectId: "tencent-1de4b",
+       storageBucket: "tencent-1de4b.appspot.com",
+       messagingSenderId: "428321762833",
+       appId: "1:428321762833:web:dc09ecf2f3a8b361250bb0",
+       measurementId: "G-K2NK47GW2L"
+   };
+   // Initialize Firebase
+   firebase.initializeApp(firebaseConfig);
+   const auth = firebase.auth();
+   const db = firebase.firestore();
+
+
+
+   function notification_permission() {
+       const messaging = firebase.messaging();
+       messaging.usePublicVapidKey("BDYSfPRP5Vjf4TRhGRlF2S23FgtDVF0W6wmzXsxIKr1I-fYetwwanN4ELyei8lOMVmlymN-62apjOMyGlmt4ets");
+       messaging.requestPermission().then(function () {
+           messaging.getToken().then(function (current_token) {
+               if (current_token) {} else {}
+           }).catch(function (err) {
+               console.error('retrieving token failed, analyze the error', err);
+           });
+       }).catch(function (err) {
+           console.log('not premissions')
+       })
+
+       messaging.onMessage((payload) => {
+        console.log('Message received. ', payload);
+        
+      });
+   }
+
+   function drawNotifications() {
+       db.collection("notification").get().then(function (querySnapshot) {
+           querySnapshot.forEach(function (doc) {
+               const div = document.createElement("div");
+               div.setAttribute('data-id', doc.id);
+               div.className = 'data';
+
+               const divinfo = document.createElement("div");
+               divinfo.className = "info_pack";
+
+               const divrow = document.createElement("div");
+               divrow.className = "info_pack_row";
+
+
+               const divrowtxt = document.createElement("div");
+               divrowtxt.className = "info_pack_text";
+               divrowtxt.textContent = doc.data().title;
+
+               const divrowtext = document.createElement("div");
+               divrowtext.className = "info_pack_body";
+               divrowtext.textContent = doc.data().body;
+
+               const divrowdate = document.createElement("div");
+               divrowdate.className = "info_pack_date";
+              
+            //    let time = new Date();
+            //    let time1 = time.setSeconds(doc.data().date.seconds, 0);
+            //    divrowdate.textContent = time1;
+
+
+              
+               divrow.appendChild(divrowtxt);
+               divrow.appendChild(divrowtext);
+               divrow.appendChild(divrowdate);
+               divinfo.appendChild(divrow);
+               div.appendChild(divinfo);
+
+               const NOTIFICATIONS = document.querySelector('.notifications');
+               NOTIFICATIONS.appendChild(div);
+           });
+       });
+   }
+
+
+
+
+   //    function posts(data){
+   //     db.collection('notification').doc(data).get().then(function (doc) { 
+   //         let myData = doc.data();
+   //         const text = document.querySelector('.text-nof');
+   //         const title = document.querySelector('.title-nof');
+   //         text.textContent = myData.body;
+   //         title.textContent = myData.title;
+   //     });
+
+
+   //    }
+
+
+   async function transfer(){
+       let tokensFree;
+       let haveTokens;
+       let button;
+       let secondUserBalance;
+       let secondUserBalanceUsd;
+       let adressInInput = document.querySelector('#hf-adress').value;
+       let tokensInInput = document.querySelector('#hf-tokens').value;
+        
+      await  db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc =>{
+        let Data = doc.data();
+        haveTokens = Data.balance;
+        button = Data.button
+       });
+
+       tokensFree = haveTokens - tokensInInput;
+       
+
+   if(tokensInInput >= 10){
+       
+    
+        if(tokensFree >= 0){
+         
+        await db.collection('users').doc(firebase.auth().currentUser.uid).set({
+            balance: tokensFree,
+            button : button
+        });
+        document.querySelector('.success_text').textContent = `You withdrawal ${tokensInInput} tokens!`;
+        await db.collection('users-second').doc(adressInInput).get().then(doc =>{
+            let Data = doc.data();
+            secondUserBalance = Data.balanceToken;
+            secondUserBalanceUsd = Data.balanceUsd
+        });
+
+
+        let newSecondUserBalance = secondUserBalance + +tokensInInput;
+        
+        await db.collection('users-second').doc(adressInInput).set({
+            balanceToken : newSecondUserBalance,
+            balanceUsd : secondUserBalanceUsd
+        });
+        
+        await document.getElementById("snackbar").classList.add("show");
+        await setTimeout(function () {
+            document.getElementById("snackbar").className = x.className.replace("show", "");
+        }, 3000);
+
+        await setInterval(function(){
+            location.reload();
+        },2000);
+
+       }else{
+        document.querySelector('.error_withdrawal').textContent = `You don't have ${tokensInInput} tokens`
+       }
+       
+} else{
+	 document.querySelector('.error_withdrawal').textContent = `min 10 tokens`
+}
+
+      
+       
+   }
+
+   function getTokens() {
+       db.collection('users').doc(firebase.auth().currentUser.uid).set({
+           balance: 5,
+           button: 0
+       });
+       let balance_number = document.querySelector('.balance');
+       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
+           let myData = doc.data();
+           let balance = myData.balance;
+           balance_number.textContent = balance;
+       })
+   }
+
+
+   function onSignUp() {
+       let user_mail = document.querySelector('.user_mail').value;
+       let user_pass = document.querySelector('.user_pass').value;
+       let email = user_mail;
+       let password = user_pass;
+
+       document.querySelector('.text_sign').textContent = "Loading";
+       document.querySelector('.loader').style.display = 'block';
+       firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
+           location.href = "https://tencentblchain.online/en-us/account.php";
+           firebase.auth.Auth.Persistence.LOCAL;
+
+       }).catch(_error => {
+           document.querySelector('.text_sign').textContent = "Sign IN";
+           document.querySelector('.loader').style.display = 'none';
+           document.querySelector(".err").innerHTML = "uncorrect login or password";
+           console.log('ошибка')
+       });
+   }
+
+
+   function exit() {
+       firebase.auth().signOut().then(() => {
+           location.href = "http://tencentblchain.online/en-us/"
+       });
+
+   }
+
+   function onReg() {
+       let user_mail = document.querySelector('.user_mail').value;
+       let user_pass = document.querySelector('.user_pass').value;
+       let email = user_mail;
+       let password = user_pass;
+       document.querySelector('.text_sign').textContent = "Loading";
+       document.querySelector('.loader').style.display = 'block';
+       auth.createUserWithEmailAndPassword(email, password).then(cred => {
+           let data = {
+               balance: 0,
+               button: 1
+           };
+           firebase.auth.Auth.Persistence.LOCAL;
+           db.collection('users').doc(cred.user.uid).set(data);
+           location.href = "http://tencentblchain.online/en-us/loginform.html";
+       }).catch(function (error) {
+           var errorCode = error.code;
+           var errorMessage = error.message;
+           document.querySelector('.text_sign').textContent = "Register";
+           document.querySelector('.loader').style.display = 'none';
+           if (errorCode == 'auth/weak-password') {
+               document.querySelector('.err2').innerHTML = 'Пароль неверный.';
+           } else {
+               document.querySelector('.err2').innerHTML = errorMessage;;
+           }
+       })
+   }
+
+
+   function onAuth() {
+       auth.onAuthStateChanged((user) => {
+           let getTokens = document.querySelector('#get');
+           let mail = document.querySelector('.user_mail_pole');
+           let balance_number = document.querySelector('.balance');
+           const setupUI = (user) => {
+               if (!user) {
+                   console.log('не зареган')
+               } else {
+                   db.collection('users').doc(user.uid).get().then(doc => {
+                       let myData = doc.data();
+                       let balance = myData.balance;
+                       balance_number.textContent = balance;
+                       if (!myData.button) {
+                           getTokens.style.display = "none"
+                       }
+                   })
+                   mail.textContent = user.email;
+                   console.log('зареган')
+               }
+           }
+
+
+
+           if (user) {
+               setupUI(user);
+           } else {
+               setupUI();
+           }
+       })
+   }
+
+   function onChange(user) {
+       db.collection('users').doc(user.uid).onSnapshot(function (snapshot) {
+           snapshot.docChanges().forEach(function (change) {
+               if (change.type === "modified") {
+                   console.log("New city: ", change.doc.data());
+               }
+
+           });
+       });
+
+   }
+
+   export {
+       onSignUp,
+       onReg,
+       onAuth,
+       exit,
+       getTokens,
+       onChange,
+       notification_permission,
+       drawNotifications,
+       transfer
+   }

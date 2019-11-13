@@ -1,0 +1,6 @@
+{
+    "serviceworker": {
+    "src": "firebase-messaging-sw.js",
+    "scope": "/"
+}
+}
