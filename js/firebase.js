@@ -31,9 +31,9 @@
        })
 
        messaging.onMessage((payload) => {
-        console.log('Message received. ', payload);
-        
-      });
+           console.log('Message received. ', payload);
+
+       });
    }
 
    function drawNotifications() {
@@ -60,13 +60,13 @@
 
                const divrowdate = document.createElement("div");
                divrowdate.className = "info_pack_date";
-              
-            //    let time = new Date();
-            //    let time1 = time.setSeconds(doc.data().date.seconds, 0);
-            //    divrowdate.textContent = time1;
+
+               //    let time = new Date();
+               //    let time1 = time.setSeconds(doc.data().date.seconds, 0);
+               //    divrowdate.textContent = time1;
 
 
-              
+
                divrow.appendChild(divrowtxt);
                divrow.appendChild(divrowtext);
                divrow.appendChild(divrowdate);
@@ -95,7 +95,7 @@
    //    }
 
 
-   async function transfer(){
+   async function transfer() {
        let tokensFree;
        let haveTokens;
        let button;
@@ -103,72 +103,102 @@
        let secondUserBalanceUsd;
        let adressInInput = document.querySelector('#hf-adress').value;
        let tokensInInput = document.querySelector('#hf-tokens').value;
-        
-      await  db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc =>{
-        let Data = doc.data();
-        haveTokens = Data.balance;
-        button = Data.button
-       });
-
-       tokensFree = haveTokens - tokensInInput;
-       
-
-   if(tokensInInput >= 10){
-       
+       let passInInput = document.querySelector('#hf-pass').value;
+       let credentials = firebase.auth.EmailAuthProvider.credential(
+        firebase.auth().currentUser.email, 
+        passInInput
+      );
+       let re_auth;
     
-        if(tokensFree >= 0){
-         
-        await db.collection('users').doc(firebase.auth().currentUser.uid).set({
-            balance: tokensFree,
-            button : button
+        await firebase.auth().currentUser.reauthenticateWithCredential(credentials).then(function () {
+            re_auth = 1;
+        }).catch(function(error){
+            console.log('bad')
         });
-        document.querySelector('.success_text').textContent = `You withdrawal ${tokensInInput} tokens!`;
-        await db.collection('users-second').doc(adressInInput).get().then(doc =>{
+       
+       
+         if(re_auth){
+        document.querySelector('.withdraw_btn').disabled = true;
+        await db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
             let Data = doc.data();
-            secondUserBalance = Data.balanceToken;
-            secondUserBalanceUsd = Data.balanceUsd
+            haveTokens = Data.balance;
+            button = Data.button
         });
-
-
-        let newSecondUserBalance = secondUserBalance + +tokensInInput;
-        
-        await db.collection('users-second').doc(adressInInput).set({
-            balanceToken : newSecondUserBalance,
-            balanceUsd : secondUserBalanceUsd
-        });
-        
-        await document.getElementById("snackbar").classList.add("show");
-        await setTimeout(function () {
-            document.getElementById("snackbar").className = x.className.replace("show", "");
-        }, 3000);
-
-        await setInterval(function(){
-            location.reload();
-        },2000);
-
+         tokensFree = haveTokens - tokensInInput;
+ 
+ 
+         if (tokensInInput >= 10) {
+ 
+ 
+             if (tokensFree >= 0) {
+ 
+                await db.collection('users').doc(firebase.auth().currentUser.uid).set({
+                     balance: tokensFree,
+                     button: button
+                });
+                 document.querySelector('.success_text').textContent = `You withdrawal ${tokensInInput} tokens!`;
+                 await db.collection('users-second').doc(adressInInput).get().then(doc => {
+                     let Data = doc.data();
+                     secondUserBalance = Data.balanceToken;
+                     secondUserBalanceUsd = Data.balanceUsd
+                });
+ 
+ 
+                 let newSecondUserBalance = secondUserBalance + +tokensInInput;
+ 
+                 await db.collection('users-second').doc(adressInInput).set({
+                 balanceToken: newSecondUserBalance,
+                     balanceUsd: secondUserBalanceUsd
+                 });
+ 
+                 await document.getElementById("snackbar").classList.add("show");
+                 await setTimeout(function () {
+                     document.getElementById("snackbar").className = x.className.replace("show", "");
+                 }, 3000);
+ 
+                 await setInterval(function () {
+                     location.reload();
+                 }, 2000);
+ 
+             } else {
+                 
+                 document.querySelector('.error_withdrawal').textContent = `You don't have ${tokensInInput} tokens`
+            }
+ 
+         } else {
+             document.querySelector('.error_withdrawal').textContent = `Min 10 tokens`
+         }
        }else{
-        document.querySelector('.error_withdrawal').textContent = `You don't have ${tokensInInput} tokens`
+        document.querySelector('.withdraw_btn').disabled = false;
+        document.querySelector('.error_withdrawal').textContent = `Uncorrect password`
        }
+    }
+    
+    
+    
        
-} else{
-	 document.querySelector('.error_withdrawal').textContent = `min 10 tokens`
-}
 
-      
-       
-   }
 
-   function getTokens() {
-       db.collection('users').doc(firebase.auth().currentUser.uid).set({
-           balance: 5,
-           button: 0
-       });
+
+   
+
+   async function getTokens() {
+        let button;
+        let oldBalance;
+    await db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
+        let myData = doc.data();
+        oldBalance = myData.balance;
+        button = myData.button;
+    })
+
+        let newBalance = oldBalance + 5;
+    await  db.collection('users').doc(firebase.auth().currentUser.uid).set({
+           balance: newBalance,
+           button: button
+    });
        let balance_number = document.querySelector('.balance');
-       db.collection('users').doc(firebase.auth().currentUser.uid).get().then(doc => {
-           let myData = doc.data();
-           let balance = myData.balance;
-           balance_number.textContent = balance;
-       })
+       balance_number.textContent = newBalance;
+      
    }
 
 
@@ -242,8 +272,8 @@
                        let myData = doc.data();
                        let balance = myData.balance;
                        balance_number.textContent = balance;
-                       if (!myData.button) {
-                           getTokens.style.display = "none"
+                       if (myData.button) {
+                           getTokens.style.display = "block"
                        }
                    })
                    mail.textContent = user.email;

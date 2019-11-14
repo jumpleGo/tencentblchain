@@ -85,7 +85,9 @@
 
         }
 
-
+        #get{
+            display:none;
+        }
         
     </style>
 </head>
@@ -251,6 +253,15 @@
                                                     name="hf-adress" placeholder="tencent adress"
                                                     class="form-control"><span class="help-block">adress</span></div>
                                         </div>
+
+                                         <div class="row form-group">
+                                            <div class="col col-md-3"><label for="hf-adress"
+                                                    class=" form-control-label">Password</label></div>
+                                            <div class="col-12 col-md-9">
+                                            <input id="hf-pass"
+                                                    name="hf-adress" placeholder="password"
+                                                    class="form-control"></div>
+                                        </div>
                                     </form>
                                 </div>
                                 <div class="card-footer">
@@ -323,7 +334,6 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-messaging.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase-firestore.js"></script>
     <script>
@@ -385,6 +395,7 @@
 
     document.querySelector('.withdraw_btn').addEventListener('click', function(){
         sign.transfer();
+        
     })
 
   
