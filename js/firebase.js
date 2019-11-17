@@ -192,6 +192,7 @@
     })
 
         let newBalance = oldBalance + 5;
+        button = 0;
     await  db.collection('users').doc(firebase.auth().currentUser.uid).set({
            balance: newBalance,
            button: button
