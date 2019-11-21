@@ -201,8 +201,69 @@
                                             <h3 class="text-center">Pay Invoice</h3>
                                         </div>
                                         <hr>
-                                        <form action="https://wl.walletone.com/checkout/checkout/Index" method="POST" target="_blank" class="-visor-no-click"> <input type="hidden" name="WMI_MERCHANT_ID" value="134959913875"> <input type="hidden" name="WMI_PAYMENT_AMOUNT" value="50"> <input type="hidden" name="WMI_CURRENCY_ID" value="840"> <input type="hidden" name="WMI_DESCRIPTION" value="Футболка «Wallet One»"> <input type="hidden" name="WMI_SUCCESS_URL" value="http://www.walletone.com/"> <input type="hidden" name="WMI_FAIL_URL" value="http://www.walletone.com/"> <input type="hidden" name="WMI_CUSTOMER_FIRSTNAME" value="Иван"> <input type="hidden" name="WMI_CUSTOMER_LASTNAME" value="Иванов"> <input type="hidden" name="WMI_CUSTOMER_EMAIL" value="ivanov@test.ru"> <input type="hidden" name="lang" value="ru-RU"> <input type="submit" class="btn demo-item-btn" value="Купить"></form>
-                                    </div>
+                                        <?
+$fk_merchant_id = '173610'; 
+$fk_merchant_key = '0dzdcrjc'; 
+//0dzdcrjc
+if (isset($_GET['prepare_once'])) {
+    $hash = md5($fk_merchant_id.":".$_GET['oa'].":".$fk_merchant_key.":".$_GET['l']);
+    echo '<hash>'.$hash.'</hash>';
+    exit;
+}
+?>
+<script src="http://yandex.st/jquery/1.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+var min = 10;
+function calculate() {
+    var re = /[^0-9\.]/gi;
+    var url = window.location.href;
+    var desc = $('#desc').val();
+    var sum = $('#sum').val();
+    if (re.test(sum)) {
+        sum = sum.replace(re, '');
+        $('#oa').val(sum);
+    }
+    if (sum < min) {
+        $('#error').html('min 10$');
+        $('#submit').attr("disabled", "disabled");
+        return false;
+    } else {
+        $('#error').html('');
+    }
+    let num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
+    $('#desc').text(num);
+    $.get(url+'?prepare_once=1&l='+desc+'&oa='+sum, function(data) {
+         var re_anwer = /<hash>([0-9a-z]+)<\/hash>/gi;
+         $('#s').val(re_anwer.exec(data)[1]);
+         $('#submit').removeAttr("disabled");
+    });
+}
+</script>
+
+
+<div id="error"></div>
+
+    <form method=GET type=json  action="http://www.free-kassa.ru/merchant/cash.php">
+    <input type="hidden" name="m" value="<?=$fk_merchant_id?>">
+    <input style="width: 100%;
+    border: 1px solid #80808038;
+    padding: 10px;
+    font-size: 20px;" type="text" name="oa" id="sum" id="oa" onchange="calculate()" onkeyup="calculate()" onfocusout="calculate()" onactivate="calculate()" ondeactivate="calculate()" placeholder="Total USD"> 
+    <input type="hidden" name="s" id="s" value="0">
+    <br>
+    <input type="hidden" name="o" id="desc" value="" onchange="calculate()" onkeyup="calculate()" onfocusout="calculate()" onactivate="calculate()" ondeactivate="calculate()"> 
+    <br>
+    <input style="
+    width: 100%;
+    border: none;
+    background: #0101c1;
+    color: white;
+    text-transform: uppercase;
+    padding: 10px;
+    font-size: 20px;
+    " type="submit" id="submit" value="pay" disabled>
+</form>
+                                         </div>
                                 </div>
 
                             </div>
@@ -324,6 +385,11 @@
                 x.className = x.className.replace("show", "");
             }, 3000);
         })
+    </script>
+    <script>
+    function rand(){
+        return num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
+    }
     </script>
 
     <script>

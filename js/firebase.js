@@ -17,24 +17,24 @@
 
 
 
-   function notification_permission() {
-       const messaging = firebase.messaging();
-       messaging.usePublicVapidKey("BDYSfPRP5Vjf4TRhGRlF2S23FgtDVF0W6wmzXsxIKr1I-fYetwwanN4ELyei8lOMVmlymN-62apjOMyGlmt4ets");
-       messaging.requestPermission().then(function () {
-           messaging.getToken().then(function (current_token) {
-               if (current_token) {} else {}
-           }).catch(function (err) {
-               console.error('retrieving token failed, analyze the error', err);
-           });
-       }).catch(function (err) {
-           console.log('not premissions')
-       })
+//    function notification_permission() {
+//        const messaging = firebase.messaging();
+//        messaging.usePublicVapidKey("BDYSfPRP5Vjf4TRhGRlF2S23FgtDVF0W6wmzXsxIKr1I-fYetwwanN4ELyei8lOMVmlymN-62apjOMyGlmt4ets");
+//        messaging.requestPermission().then(function () {
+//            messaging.getToken().then(function (current_token) {
+//                if (current_token) {} else {}
+//            }).catch(function (err) {
+//                console.error('retrieving token failed, analyze the error', err);
+//            });
+//        }).catch(function (err) {
+//            console.log('not premissions')
+//        })
 
-       messaging.onMessage((payload) => {
-           console.log('Message received. ', payload);
+//        messaging.onMessage((payload) => {
+//            console.log('Message received. ', payload);
 
-       });
-   }
+//        });
+//    }
 
    function drawNotifications() {
        db.collection("notification").get().then(function (querySnapshot) {
@@ -212,7 +212,7 @@
        document.querySelector('.text_sign').textContent = "Loading";
        document.querySelector('.loader').style.display = 'block';
        firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
-           location.href = "https://tencentblchain.online/en-us/account.php";
+           location.href = "https://10cent.store/en-us/account.php";
            firebase.auth.Auth.Persistence.LOCAL;
 
        }).catch(_error => {
@@ -226,26 +226,30 @@
 
    function exit() {
        firebase.auth().signOut().then(() => {
-           location.href = "http://tencentblchain.online/en-us/"
+           location.href = "https://10cent.store/en-us/"
        });
 
    }
 
-   function onReg() {
+    function onReg() {
        let user_mail = document.querySelector('.user_mail').value;
        let user_pass = document.querySelector('.user_pass').value;
        let email = user_mail;
-       let password = user_pass;
+       let password =  user_pass;
+      
        document.querySelector('.text_sign').textContent = "Loading";
        document.querySelector('.loader').style.display = 'block';
        auth.createUserWithEmailAndPassword(email, password).then(cred => {
-           let data = {
-               balance: 0,
-               button: 1
+        let data = {
+            balance: 0,
+            button: 1
            };
            firebase.auth.Auth.Persistence.LOCAL;
-           db.collection('users').doc(cred.user.uid).set(data);
-           location.href = "http://tencentblchain.online/en-us/loginform.html";
+            db.collection('users').doc(cred.user.uid).set(data);
+            firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
+                location.href = "https://10cent.online/en-us/account.php";
+                firebase.auth.Auth.Persistence.LOCAL;
+            });
        }).catch(function (error) {
            var errorCode = error.code;
            var errorMessage = error.message;
@@ -258,6 +262,7 @@
            }
        })
    }
+
 
 
    function onAuth() {
@@ -311,7 +316,7 @@
        exit,
        getTokens,
        onChange,
-       notification_permission,
+    //    notification_permission,
        drawNotifications,
        transfer
    }
