@@ -1,0 +1,11 @@
+{
+    "require": {
+        "grpc/grpc": "^v1.1.0",
+        "google/cloud-firestore": "^1.10",
+        "google/protobuf": "^v3.3.0",
+        "kreait/firebase-php": "4.15",
+        "google/cloud": "^0.120.0",
+        "morrislaptop/firestore-php": "^2.2",
+        "kreait/firebase-tokens": "1.8.1"
+    }
+}

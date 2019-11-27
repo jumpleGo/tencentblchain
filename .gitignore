@@ -54,6 +54,7 @@ mobile/images/
 mobile/js_e/
 mobile/en-us/articles/
 mobile/en-us/images/
+vendor/
 
 
 # TypeScript v1 declaration files

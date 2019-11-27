@@ -97,6 +97,7 @@
 
 <body>
 
+
     <!-- Left Panel -->
 
     <aside id="left-panel" class="left-panel">
@@ -201,7 +202,7 @@
                                             <h3 class="text-center">Pay Invoice</h3>
                                         </div>
                                         <hr>
-                                        <?
+                                        <?php
 $fk_merchant_id = '173610'; 
 $fk_merchant_key = '0dzdcrjc'; 
 //0dzdcrjc
@@ -211,49 +212,59 @@ if (isset($_GET['prepare_once'])) {
     exit;
 }
 ?>
-<script src="http://yandex.st/jquery/1.6.0/jquery.min.js"></script>
-<script type="text/javascript">
-var min = 10;
-function calculate() {
-    var re = /[^0-9\.]/gi;
-    var url = window.location.href;
-    var desc = $('#desc').val();
-    var sum = $('#sum').val();
-    if (re.test(sum)) {
-        sum = sum.replace(re, '');
-        $('#oa').val(sum);
-    }
-    if (sum < min) {
-        $('#error').html('min 10$');
-        $('#submit').attr("disabled", "disabled");
-        return false;
-    } else {
-        $('#error').html('');
-    }
-    let num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
-    $('#desc').text(num);
-    $.get(url+'?prepare_once=1&l='+desc+'&oa='+sum, function(data) {
-         var re_anwer = /<hash>([0-9a-z]+)<\/hash>/gi;
-         $('#s').val(re_anwer.exec(data)[1]);
-         $('#submit').removeAttr("disabled");
-    });
-}
-</script>
+                                        <script src="http://yandex.st/jquery/1.6.0/jquery.min.js"></script>
+                                        <script type="text/javascript">
+                                            var min = 10;
+
+                                            function calculate() {
+                                                var re = /[^0-9\.]/gi;
+                                                var url = window.location.href;
+                                                var desc = $('#desc').val();
+                                                var sum = $('#sum').val();
+                                                if (re.test(sum)) {
+                                                    sum = sum.replace(re, '');
+                                                    $('#oa').val(sum);
+                                                }
+                                                if (sum < min) {
+                                                    $('#error').html('min 10$');
+                                                    $('#submit').attr("disabled", "disabled");
+                                                    return false;
+                                                } else {
+                                                    $('#error').html('');
+                                                }
+                                                let num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
+                                                $('#desc').text(num);
+
+                                                $.get(url + '?prepare_once=1&l=' + desc + '&oa=' + sum, function (
+                                                data) {
+                                                    var re_anwer = /<hash>([0-9a-z]+)<\/hash>/gi;
+                                                    $('#s').val(re_anwer.exec(data)[1]);
+                                                    $('#submit').removeAttr("disabled");
+                                                });
+                                            }
+                                        </script>
 
 
-<div id="error"></div>
+                                        <div id="error"></div>
 
-    <form method=GET type=json  action="http://www.free-kassa.ru/merchant/cash.php">
-    <input type="hidden" name="m" value="<?=$fk_merchant_id?>">
-    <input style="width: 100%;
+                                        <form method=GET target="_blank"
+                                            action="http://www.free-kassa.ru/merchant/cash.php">
+                                            <input type="hidden" name="m" value="<?=$fk_merchant_id?>">
+                                            <input style="width: 100%;
     border: 1px solid #80808038;
     padding: 10px;
-    font-size: 20px;" type="text" name="oa" id="sum" id="oa" onchange="calculate()" onkeyup="calculate()" onfocusout="calculate()" onactivate="calculate()" ondeactivate="calculate()" placeholder="Total USD"> 
-    <input type="hidden" name="s" id="s" value="0">
-    <br>
-    <input type="hidden" name="o" id="desc" value="" onchange="calculate()" onkeyup="calculate()" onfocusout="calculate()" onactivate="calculate()" ondeactivate="calculate()"> 
-    <br>
-    <input style="
+    font-size: 20px;" type="text" name="oa" id="sum" id="oa" onchange="calculate()" onkeyup="calculate()"
+                                                onfocusout="calculate()" onactivate="calculate()"
+                                                ondeactivate="calculate()" placeholder="Total USD">
+                                            <input type="hidden" name="s" id="s" value="0">
+                                            <input type="hidden" name="us_uid" class="uid">
+
+                                            <br>
+                                            <input type="hidden" name="o" id="desc" value="" onchange="calculate()"
+                                                onkeyup="calculate()" onfocusout="calculate()" onactivate="calculate()"
+                                                ondeactivate="calculate()">
+                                            <br>
+                                            <input style="
     width: 100%;
     border: none;
     background: #0101c1;
@@ -262,8 +273,8 @@ function calculate() {
     padding: 10px;
     font-size: 20px;
     " type="submit" id="submit" value="pay" disabled>
-</form>
-                                         </div>
+                                        </form>
+                                    </div>
                                 </div>
 
                             </div>
@@ -387,9 +398,9 @@ function calculate() {
         })
     </script>
     <script>
-    function rand(){
-        return num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
-    }
+        function rand() {
+            return num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
+        }
     </script>
 
     <script>
@@ -415,9 +426,7 @@ function calculate() {
 
     <script type="module" defer>
         import * as sign from './../js/firebase.js';
-    !(
-      sign.onAuth());
-
+    sign.onAuth();
     let exit  = document.querySelector('.exit');
     exit.addEventListener("click", () =>{
         sign.exit();
@@ -435,26 +444,23 @@ function calculate() {
        count.style.display = "none";
     });
     window.onload = sign.drawNotifications();
+     setTimeout(() => {
+        sign.getUid();
+     }, 4000);
 
-
-
+    
     document.querySelector('.withdraw_btn').addEventListener('click', function(){
         sign.transfer();
         
     })
 
-  
-    // $(document).on('click', '.info_pack_link' , function () {
-        
-    //     let data = $(this).attr('data-id');
-    //     sign.posts(data)
-    // })
-    
-    
- 
-  
+
 
     </script>
+
+
+
+
 </body>
 
 </html>
