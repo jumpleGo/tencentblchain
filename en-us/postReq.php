@@ -34,6 +34,7 @@ $firestore = (new Factory)
       die('none');
     } else{
       $amount = (int)str_replace(array(' ', ','), '', $_REQUEST['AMOUNT']);
+      $amount_coin = $amount / 10;
       $uid = $_REQUEST['us_uid'];  
       
       $collection = $firestore->collection('users');
@@ -42,10 +43,10 @@ $firestore = (new Factory)
       $bal =  $snap['balance']; 
       $button = $snap['button'];
 
-      $newbal = $bal + $amount;
+      $newbal = $bal + $amount_coin;
       $user->set([ 'balance' => $newbal, 'button' => $button]);
 
-      die('added '.$amount.' tokens, button : '.$button.' ');
+      die('added '.$amount_coin.' tokens, button : '.$button.' ');
     }
    
       

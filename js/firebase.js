@@ -39,6 +39,7 @@
 
    function getUid(){
     document.querySelector('.uid').value =  firebase.auth().currentUser.uid;
+    document.querySelector('.order').value =  firebase.auth().currentUser.uid;
     console.log(firebase.auth().currentUser.uid)
    }
    function onAuth() {
@@ -267,7 +268,7 @@
        document.querySelector('.text_sign').textContent = "Loading";
        document.querySelector('.loader').style.display = 'block';
        firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
-           location.href = "https://10cent.store/en-us/account.php";
+           location.href = "https://tenchain.tech/en-us/account.php";
            firebase.auth.Auth.Persistence.LOCAL;
 
        }).catch(_error => {
@@ -281,7 +282,7 @@
 
    function exit() {
        firebase.auth().signOut().then(() => {
-           location.href = "https://10cent.store/en-us/"
+           location.href = "https://tenchain.tech/en-us/"
        });
 
    }
@@ -330,7 +331,7 @@
            firebase.auth.Auth.Persistence.LOCAL;
            db.collection('users').doc(cred.user.uid).set(data);
            firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
-               location.href = "https://10cent.store/en-us/account.php";
+               location.href = "https://tenchain.tech/en-us/account.php";
                firebase.auth.Auth.Persistence.LOCAL;
            });
        }).catch(function (error) {

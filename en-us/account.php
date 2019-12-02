@@ -189,7 +189,87 @@
                         </div>
                     </div><!-- /# column -->
 
-                    <div class="col-lg-6 buy-tokens-button" style="display: none;">
+
+                    <div class="col-lg-6 buy-tokens-button" style="display: block;">
+                    <!--BETATTRANSFER-->
+                        <div class="card">
+                            <div class="card-header">
+                                <strong class="card-title">Buy tokens</strong>
+                            </div>
+                            <div class="card-body">
+                                <!-- Credit Card -->
+                                <div id="pay-invoice">
+                                    <div class="card-body">
+                                        <div class="card-title">
+                                            <h3 class="text-center">Pay Invoice</h3>
+                                        </div>
+                                        <hr>
+                                        <form
+                                        style="
+                                        display:flex;
+                                        flex-direction:column;
+                                        "
+                                          method="post" action="./applicationFromForm.php" accept-charset="UTF-8">
+
+                                          <label style="margin-top:20px;" for="">Amount</label>
+                                            <input style="
+                                            width: 100%;
+                                            border: 1px solid #80808038;
+                                            padding: 10px;
+                                            font-size: 20px;"
+                                            type="text"  value="" id="sum" 
+                                            onchange="calculate()" 
+                                            onkeyup="calculate()"
+                                            onfocusout="calculate()" 
+                                            onactivate="calculate()"
+                                            ondeactivate="calculate()"
+                                            id="oa"  placeholder="100 $" class="false-amount"/>
+
+
+                                            <input type="hidden" name="currency" value="RUB" />
+
+                                            <input type="hidden" name="amount" class="true-amount">
+
+                                            <label style="margin-top:20px;" for="">Your adress (automatically)</label>
+                                            <input 
+                                            style="
+                                            width: 100%;
+                                            border: 1px solid #80808038;
+                                            padding: 5px;
+                                            font-size: 16px;
+                                            " type="text" name="orderId" class="order"  required/>
+                                            <input type="hidden" name="urlResult" value="https://tenhain.tech/en-us/postReqBetatransfer.php">
+                                            <input type="hidden" name="urlSuccess" value="https://tenhain.tech/en-us/account.php">
+                                            <input type="hidden" name="urlFail" value="https://tenhain.tech/en-us/fail.php">
+                                            
+                                            
+                                            <input 
+                                            style="
+                                            margin-top:20px;
+                                            width: 100%;
+                                            border: none;
+                                            background: #0101c1;
+                                            color: white;
+                                            text-transform: uppercase;
+                                            padding: 10px;
+                                            font-size: 20px;
+                                            "
+                                            type="submit" 
+                                            id="submit">
+                                        </form>
+                                        <p id="error2"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+              
+
+                    <div style="display:none" class="col-lg-6 buy-tokens-button">
+                     <!--FREEKASSA-->
                         <div class="card">
                             <div class="card-header">
                                 <strong class="card-title">Buy tokens</strong>
@@ -203,76 +283,58 @@
                                         </div>
                                         <hr>
                                         <?php
-$fk_merchant_id = '173610'; 
-$fk_merchant_key = '0dzdcrjc'; 
-//0dzdcrjc
-if (isset($_GET['prepare_once'])) {
-    $hash = md5($fk_merchant_id.":".$_GET['oa'].":".$fk_merchant_key.":".$_GET['l']);
-    echo '<hash>'.$hash.'</hash>';
-    exit;
-}
-?>
-                                        <script src="http://yandex.st/jquery/1.6.0/jquery.min.js"></script>
-                                        <script type="text/javascript">
-                                            var min = 10;
-
-                                            function calculate() {
-                                                var re = /[^0-9\.]/gi;
-                                                var url = window.location.href;
-                                                var desc = $('#desc').val();
-                                                var sum = $('#sum').val();
-                                                if (re.test(sum)) {
-                                                    sum = sum.replace(re, '');
-                                                    $('#oa').val(sum);
-                                                }
-                                                if (sum < min) {
-                                                    $('#error').html('min 10$');
-                                                    $('#submit').attr("disabled", "disabled");
-                                                    return false;
-                                                } else {
-                                                    $('#error').html('');
-                                                }
-                                                let num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
-                                                $('#desc').text(num);
-
-                                                $.get(url + '?prepare_once=1&l=' + desc + '&oa=' + sum, function (
-                                                data) {
-                                                    var re_anwer = /<hash>([0-9a-z]+)<\/hash>/gi;
-                                                    $('#s').val(re_anwer.exec(data)[1]);
-                                                    $('#submit').removeAttr("disabled");
-                                                });
-                                            }
-                                        </script>
+                                            $fk_merchant_id = '173610'; 
+                                            $fk_merchant_key = '0dzdcrjc'; 
+                                            //0dzdcrjc
+                                        if (isset($_GET['prepare_once'])) {
+                                            $hash = md5($fk_merchant_id.":".$_GET['oa'].":".$fk_merchant_key.":".$_GET['l']);
+                                            echo '<hash>'.$hash.'</hash>';
+                                        exit;
+                                        }
+                                        ?>
+                                        
 
 
                                         <div id="error"></div>
 
                                         <form method=GET target="_blank"
-                                            action="http://www.free-kassa.ru/merchant/cash.php">
+                                            action="https://www.free-kassa.ru/merchant/cash.php">
                                             <input type="hidden" name="m" value="<?=$fk_merchant_id?>">
-                                            <input style="width: 100%;
-    border: 1px solid #80808038;
-    padding: 10px;
-    font-size: 20px;" type="text" name="oa" id="sum" id="oa" onchange="calculate()" onkeyup="calculate()"
-                                                onfocusout="calculate()" onactivate="calculate()"
-                                                ondeactivate="calculate()" placeholder="Total USD">
+                                            <input 
+                                            style="
+                                            width: 100%;
+                                            border: 1px solid #80808038;
+                                            padding: 10px;
+                                            font-size: 20px;"
+                                            type="text" 
+                                            name="oa" 
+                                            id="sum" 
+                                            id="oa" 
+                                            onchange="calculate()" 
+                                            onkeyup="calculate()"
+                                            onfocusout="calculate()" 
+                                            onactivate="calculate()"
+                                            ondeactivate="calculate()" 
+                                            placeholder="Total USD">
                                             <input type="hidden" name="s" id="s" value="0">
                                             <input type="hidden" name="us_uid" class="uid">
-
                                             <br>
                                             <input type="hidden" name="o" id="desc" value="" onchange="calculate()"
                                                 onkeyup="calculate()" onfocusout="calculate()" onactivate="calculate()"
                                                 ondeactivate="calculate()">
                                             <br>
-                                            <input style="
-    width: 100%;
-    border: none;
-    background: #0101c1;
-    color: white;
-    text-transform: uppercase;
-    padding: 10px;
-    font-size: 20px;
-    " type="submit" id="submit" value="pay" disabled>
+                                            <input 
+                                            style="width: 100%;
+                                            border: none;
+                                            background: #0101c1;
+                                            color: white;
+                                            text-transform: uppercase;
+                                            padding: 10px;
+                                            font-size: 20px;" 
+                                            type="submit" 
+                                            id="submit" 
+                                            value="pay" 
+                                            disabled>
                                         </form>
                                     </div>
                                 </div>
@@ -388,6 +450,12 @@ if (isset($_GET['prepare_once'])) {
     <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase-firestore.js"></script>
     <script>
+     $('.false-amount')[0].oninput = function() {
+                var value = +$(this).val();
+                $('.true-amount').val(value * 65);
+    };
+    </script>
+    <script>
         var get = document.getElementById('get');
         var x = document.getElementById("snackbar");
         get.addEventListener('click', () => {
@@ -458,7 +526,40 @@ if (isset($_GET['prepare_once'])) {
 
     </script>
 
+<script src="https://yandex.st/jquery/1.6.0/jquery.min.js"></script>
+    <script type="text/javascript">
+    var min = 10;
 
+    function calculate() {
+    var re = /[^0-9\.]/gi;
+    var url = window.location.href;
+    var desc = $('#desc').val();
+    var sum = $('#sum').val();
+    if (re.test(sum)) {
+        sum = sum.replace(re, '');
+        $('#oa').val(sum);
+    }
+    if (sum < min) {
+        $('#error').html('min 10$');
+        $('#error2').html('min 10$');
+        $('#submit').attr("disabled", "disabled");
+        return false;
+    } else {
+        $('#error').html('');
+        $('#error2').html('');
+    }
+    let num = (Math.random() * (999999 - 100000) + 100000).toFixed(0);
+    $('#desc').text(num);
+  
+
+    $.get(url + '?prepare_once=1&l=' + desc + '&oa=' + sum, function (
+        data) {
+        var re_anwer = /<hash>([0-9a-z]+)<\/hash>/gi;
+        $('#s').val(re_anwer.exec(data)[1]);
+        $('#submit').removeAttr("disabled");
+    });
+}
+</script>
 
 
 </body>
