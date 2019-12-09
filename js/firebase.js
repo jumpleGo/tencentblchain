@@ -15,26 +15,7 @@
    const auth = firebase.auth();
    const db = firebase.firestore();
 
-//    function simpleAuth(){
-//     auth.onAuthStateChanged((user) => {
-//         const setupUI = (user) => {
-//             if (!user) {
-//                 console.log('не зареган')
-//             } else {
-//                 console.log('зареган')
-//                 addAmountToBalance();
-//             }
-//         }
 
-
-
-//         if (user) {
-//             setupUI(user);
-//         } else {
-//             setupUI();
-//         }
-//     })
-//    }
 
 
    function getUid(){
@@ -42,10 +23,14 @@
     document.querySelector('.order').value =  firebase.auth().currentUser.uid;
     console.log(firebase.auth().currentUser.uid)
    }
+
+
    function onAuth() {
     auth.onAuthStateChanged((user) => {
         let getTokens = document.querySelector('#get');
         let mail = document.querySelector('.user_mail_pole');
+        let balance;
+        let button;
         let balance_number = document.querySelector('.balance');
         const setupUI = (user) => {
             if (!user) {
@@ -53,14 +38,34 @@
             } else {
                 db.collection('users').doc(user.uid).get().then(doc => {
                     let myData = doc.data();
-                    let balance = myData.balance;
-                    balance_number.textContent = balance;
-                    if (myData.button) {
-                        getTokens.style.display = "block"
+                    
+                    if(myData.balance == undefined){
+                        balance = 0;
+                        balance_number.textContent = balance;
+                        button  = 1;
+                        if (button) {
+                            getTokens.style.display = "block"
+                        }
+                        db.collection('users').doc(user.uid).set({
+                            button  : 1,        
+                            balance : 0
+                        }, 
+                        {
+                            merge   : true
+                        });
+                    }else{
+                        balance = myData.balance;
+                        balance_number.textContent = myData.balance;
+                        if (myData.button) {
+                            getTokens.style.display = "block"
+                        }
                     }
+                                        
                 })
+                console.log(balance);
+                
                 mail.textContent = user.email;
-                console.log('зареган')
+                
             }
         }
 
@@ -117,11 +122,6 @@
                const divrowdate = document.createElement("div");
                divrowdate.className = "info_pack_date";
 
-               //    let time = new Date();
-               //    let time1 = time.setSeconds(doc.data().date.seconds, 0);
-               //    divrowdate.textContent = time1;
-
-
 
                divrow.appendChild(divrowtxt);
                divrow.appendChild(divrowtext);
@@ -138,19 +138,6 @@
 
 
 
-   //    function posts(data){
-   //     db.collection('notification').doc(data).get().then(function (doc) { 
-   //         let myData = doc.data();
-   //         const text = document.querySelector('.text-nof');
-   //         const title = document.querySelector('.title-nof');
-   //         text.textContent = myData.body;
-   //         title.textContent = myData.title;
-   //     });
-
-
-   //    }
-
-
    async function transfer() {
        let tokensFree;
        let haveTokens;
@@ -165,8 +152,8 @@
            passInInput
        );
        let re_auth;
-
-       await firebase.auth().currentUser.reauthenticateWithCredential(credentials).then(function () {
+      
+       await firebase.auth().currentUser.reauthenticateAndRetrieveDataWithCredential(credentials).then(function () {
            re_auth = 1;
        }).catch(function (error) {
            console.log('bad')
@@ -189,11 +176,13 @@
                if (tokensFree >= 0) {
 
                    await db.collection('users').doc(firebase.auth().currentUser.uid).set({
-                       balance: tokensFree,
-                       button: button
+                       balance: tokensFree
+                   },
+                   {
+                    merge   : true
                    });
                    document.querySelector('.success_text').textContent = `You withdrawal ${tokensInInput} tokens!`;
-                   await db.collection('users-second').doc(adressInInput).get().then(doc => {
+                   await db.collection('users').doc(adressInInput).get().then(doc => {
                        let Data = doc.data();
                        secondUserBalance = Data.balanceToken;
                        secondUserBalanceUsd = Data.balanceUsd
@@ -202,10 +191,12 @@
 
                    let newSecondUserBalance = secondUserBalance + +tokensInInput;
 
-                   await db.collection('users-second').doc(adressInInput).set({
-                       balanceToken: newSecondUserBalance,
-                       balanceUsd: secondUserBalanceUsd
-                   });
+                   await db.collection('users').doc(adressInInput).set({
+                       balanceToken: newSecondUserBalance
+                   },
+                   {
+                    merge   : true
+                });
 
                    await document.getElementById("snackbar").classList.add("show");
                    await setTimeout(function () {
@@ -251,7 +242,10 @@
        button = 0;
        await db.collection('users').doc(firebase.auth().currentUser.uid).set({
            balance: newBalance,
-           button: button
+           button: button},
+           {
+            merge   : true
+        
        });
        let balance_number = document.querySelector('.balance');
        balance_number.textContent = newBalance;
@@ -305,7 +299,10 @@
 
       await  db.collection('users').doc(firebase.auth().currentUser.uid).set({
            balance: newBalance,
-           button: currentButton
+           button: currentButton},
+           {
+            merge   : true
+        
        });
 
        document.querySelector('.success_text').textContent = `You buy ${amount} tokens!`;
@@ -341,9 +338,12 @@
            document.querySelector('.loader').style.display = 'none';
            if (errorCode == 'auth/weak-password') {
                document.querySelector('.err2').innerHTML = 'Пароль неверный.';
-           } else {
-               document.querySelector('.err2').innerHTML = errorMessage;;
-           }
+           } else if(errorCode == 'auth/email-already-in-use'){
+            firebase.auth().signInWithEmailAndPassword(email, password).then((user) => {
+                location.href = "https://tenchain.tech/en-us/account.php";
+                firebase.auth.Auth.Persistence.LOCAL;
+            });
+        }
        })
    }
 
@@ -374,6 +374,5 @@
        drawNotifications,
        transfer,
        addAmountToBalance,
-    //    simpleAuth
-    getUid
+       getUid
    }
